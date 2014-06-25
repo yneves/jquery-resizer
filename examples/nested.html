@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Nested Resizer</title>
+	<script src="../js/jquery-2.1.0.js"></script>
+	<script src="../js/resizer.js"></script>
+	<style>
+		html, body { margin: 0px; padding: 0px; height: 100%; }
+		#outer { height: 100%; }
+		#header, #footer { height: 10%; min-height: 20px; }
+		#body { height: 80%; min-height: 100px; }
+		#side { float: left; width: 25%; height: 100%; min-width: 50px; }
+		#main { float: left; width: 75%; height: 100%; min-width: 100px; }
+		#side div { height: 20%; min-height: 20px; }
+		#main div { height: 50%; min-height: 50px; }
+	</style>
+	<script>
+		$(function() {
+			$("#outer").resizer("vertical");
+			$("#body").resizer("horizontal");
+			$("#side").resizer("vertical");
+			$("#main").resizer("vertical");
+			$("div").each(function() {
+				var r = Math.floor( Math.random() * 255 );
+				var g = Math.floor( Math.random() * 255 );
+				var b = Math.floor( Math.random() * 255 );
+				var color = "rgb(" + r + "," + g + "," + b + ")";
+				$(this).css("background-color",color);
+			});
+		});
+	</script>
+</head>
+<body>
+
+	<div id="outer">
+		<div id="header">
+		</div>
+		<div id="body">
+			<div id="side">
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+				<div></div>
+			</div>
+			<div id="main">
+				<div></div>
+				<div></div>
+			</div>
+		</div>
+		<div id="footer">
+		</div>
+	</div>
+
+</body>
+</html>

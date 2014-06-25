@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Simple Resizer</title>
+	<script src="../js/jquery-2.1.0.js"></script>
+	<script src="../js/resizer.js"></script>
+	<style>
+		html, body { margin: 0px; padding: 0px; height: 100%; }
+		#outer { height: 100%; }
+		#side { float: left; width: 25%; height: 100%; min-width: 50px; }
+		#main { float: left; width: 75%; height: 100%; min-width: 100px; }
+		#side > div { height: 20%; min-height: 20px; }
+	</style>
+	<script>
+		$(function() {
+			$("#outer").resizer("horizontal");
+			$("#side").resizer("vertical");
+			$("div").each(function() {
+				var r = Math.floor( Math.random() * 255 );
+				var g = Math.floor( Math.random() * 255 );
+				var b = Math.floor( Math.random() * 255 );
+				var color = "rgb(" + r + "," + g + "," + b + ")";
+				$(this).css("background-color",color);
+			});
+		});
+	</script>
+</head>
+<body>
+
+	<div id="outer">
+		<div id="side">
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+			<div></div>
+		</div>
+		<div id="main">
+		</div>
+	</div>
+
+</body>
+</html>
