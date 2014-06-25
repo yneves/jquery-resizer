@@ -1,7 +1,7 @@
 jquery-resizer
 ==============
 
-jQuery plugin to make resize siblings within their parent.
+jQuery plugin to make siblings resizable within their parent.
 
 ### Why another resizer?
 
