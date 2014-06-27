@@ -1,3 +1,9 @@
+/*!
+**  jquery-resizer -- jQuery plugin to make siblings resizable within their parent.
+**  Copyright (c) 2014 Yuri Neves Silveira <http://yneves.com>
+**  Licensed under The MIT License <http://opensource.org/licenses/MIT>
+**  Distributed on <http://github.com/yneves/jquery-resizer>
+*/
 (function($) {
 // - -------------------------------------------------------------------- - //
 
@@ -26,7 +32,7 @@ $.fn.resizer = function(arg) {
 			if (arg == "minimize") {
 
 				var prop = opts.mode == "horizontal" ? "width" : "height";
-				
+
 				elm.children(opts.selector).filter(args[1]).each(function() {
 					var item = $(this);
 					var size = parseInt(item.css(prop));
@@ -94,6 +100,7 @@ $.fn.resizer = function(arg) {
 			var next;
 			var prev;
 			var total;
+			var mins = [];
 			var items = [];
 			var itemspos = [];
 
@@ -103,7 +110,7 @@ $.fn.resizer = function(arg) {
 				// shrinks all the previous elements
 				for (var i = 0; i < prev.length; i++) {
 					var size = parseInt(prev[i].css(prop)) - resize;
-					var min = parseInt(prev[i].css("min-" + prop));
+					var min = mins[i];
 					if (size > min) {
 						used += size;
 						prev[i].css(prop,size);
@@ -133,7 +140,7 @@ $.fn.resizer = function(arg) {
 				// shrinks all the next elements
 				for (var i = 0; i < next.length; i++) {
 					var size = parseInt(next[i].css(prop)) - resize;
-					var min = parseInt(next[i].css("min-" + prop));
+					var min = mins[i];
 					if (size > min) {
 						used += size;
 						next[i].css(prop,size);
@@ -162,6 +169,7 @@ $.fn.resizer = function(arg) {
 				resizing = true;
 				lastY = ev.pageY;
 				lastX = ev.pageX;
+				mins = items.map(function(e) { return parseInt(e.css("min-" + prop)) });
 				total = parseInt(elm.css(prop));
 				next = resizable.nextAll(opts.selector)._resizerMapObjs();
 				prev = resizable.prevAll(opts.selector)._resizerMapObjs();
@@ -171,16 +179,30 @@ $.fn.resizer = function(arg) {
 
 			// @resizeStop
 			function resizeStop() {
-//				// calculates dimensions as percentages to follow window or parent resizing
-//				for (var i = 0; i < items.length; i++) {
-//					var size = parseInt(items[i].css(prop));
-//					var percent = size * 100 / total;					
-//					items[i].css(prop,percent.toFixed(2) + "%");
-//				}
+
+				// fills possible empty pixels at the end
+				var sizes = [];
+				var used = 0;
+				for (var i = 0; i < items.length; i++) {
+					var size = parseInt(items[i].css(prop));
+					if (i == items.length - 1) {
+						size = total - used;
+						items[i].css(prop,size);
+					}
+					sizes[i] = size;
+					used += size;
+				}
+
+				// calculates dimensions as percentages to follow window or parent resizing
+				for (var i = 0; i < items.length; i++) {
+					var percent = sizes[i] * 100 / total;
+					items[i].css(prop,percent.toFixed(2) + "%");
+				}
+
 				// clear everything and refresh positions
 				resizing = false;
 				paused = false;
-//				total = null;
+				total = null;
 				lastX = null;
 				lastY = null;
 				next = null;
@@ -193,7 +215,51 @@ $.fn.resizer = function(arg) {
 
 			// @resizeWindow
 			function resizeWindow() {
-				// TODO
+				
+				total = parseInt(elm.css(prop));
+				
+				var sizes = [];
+				var used = 0;
+				for (var i = 0; i < items.length; i++) {
+					var size = parseInt(items[i].css(prop));
+					sizes[i] = size;
+					used += size;
+				}
+				
+				// if using more space than available cuts from some element
+				if (used > total) {
+					var resize = used - total;
+					for (var i = 0; i < items.length; i++) {
+						if (sizes[i] > mins[i]) {
+							var available = sizes[i] - mins[i];
+							if (available >= resize) {
+								sizes[i] = sizes[i] - resize;
+								items[i].css(prop,sizes[i] - resize);
+								break;
+							}
+						}
+					}
+
+				// if using less space than available distribute among those which aren't minimized
+				} else if (used < total) {
+					var resize = total - used;
+					for (var i = 0; i < items.length; i++) {
+						if (sizes[i] > mins[i]) {
+							sizes[i] = sizes[i] + resize;
+							items[i].css(prop,sizes[i] + resize);
+							break;
+						}
+					}
+
+				}
+
+				// calculates dimensions as percentages to follow window or parent resizing
+				for (var i = 0; i < items.length; i++) {
+					var percent = sizes[i] * 100 / total;
+					items[i].css(prop,percent.toFixed(2) + "%");
+				}
+
+				total = null;
 			}
 
 // - -------------------------------------------------------------------- - //

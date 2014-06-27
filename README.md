@@ -48,4 +48,3 @@ $("#resizable").resizer("vertical"); // or horizontal
 ## TODO
 
 * Support nested resizables.
-* Respond to window resizing.
