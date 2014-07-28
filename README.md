@@ -45,6 +45,18 @@ $("#resizable").resizer("vertical"); // or horizontal
 </script>
 ```
 
-## TODO
+Listen to events.
 
-* Support nested resizables.
+```js
+// fired when resize operation starts (mousedown on resize area)
+$("#resizable").on("resizestart");
+
+// fired when resize operation stops (mouseup/mouseleave)
+$("#resizable").on("resizestop");
+
+// fired when all elements reach minimum size
+$("#resizable").on("resizepause");
+
+// fired during the resize operation
+$("#resizable").on("resized");
+```
